@@ -1,0 +1,5 @@
+---
+# defaults file for ansible-role-docker-swarm
+docker_swarm_manager_port: 2377
+docker_swarm_group: swarm
+docker_swarm_manager_group: swarm_managers

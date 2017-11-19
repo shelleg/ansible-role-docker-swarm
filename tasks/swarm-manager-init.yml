@@ -1,0 +1,41 @@
+---
+- name: "Initialize Swarm"
+  shell: docker swarm init --advertise-addr "{{ docker_swarm_manager_ip }}:{{ docker_swarm_manager_port }}"
+  when: swarm_avail|failed
+
+- name: "Get Swarm manager token"
+  shell: docker swarm join-token -q manager
+  changed_when: false
+  register: manager_join_token
+
+- name: "Get Swarm Worker token"
+  shell: docker swarm join-token -q worker
+  changed_when: false
+  register: worker_join_token
+
+- name: "Set swarm tokens facts"
+  set_fact:
+    swarm_manager_join_token: "{{ manager_join_token.stdout }}"
+    swarm_worker_join_token: "{{ worker_join_token.stdout }}"
+
+- name: "create var file with swarm info (vars from swarm manager)"
+  template:
+    src: swarm-info.yml.j2
+    dest: "/tmp/99_swarm.yml"
+    mode: 0755
+
+- name: "fetch var file"
+  fetch:
+    src: "/tmp/99_swarm.yml"
+    dest: "{{ playbook_dir }}/group_vars/all/99_swarm.yml"
+    flat: yes
+  become: false
+
+- name: "For portability among docks hosts - add hosts to group swarm_temp with join and manage tokens"
+  add_host:
+    name: "{{ inventory_hostname }}"
+    groups: swarm_temp
+    swarm_manager: "{{ swarm_manager_ip }}"
+    swarm_manager_join_token: "{{ manager_join_token.stdout }}"
+    swarm_worker_join_token: "{{ worker_join_token.stdout }}"
+    

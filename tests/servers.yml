@@ -1,0 +1,41 @@
+---
+- name: centos-master
+  box: 'centos/7'
+  box_version: '1708.01'
+  ram: 768
+  ip: '172.16.1.101'
+  ssh_host_port: 2101
+  provider: virtualbox
+  protected: false
+  inventory: vagrant
+  inventory_groups: [ 'my_swarm','my_swarm_managers' ]
+# - name: ubuntu-master
+#   box: 'bento/ubuntu-16.04'
+#   box_version: '2.2.7'
+#   ram: 768
+#   ip: '172.16.1.102'
+#   ssh_host_port: 2102
+#   provider: virtualbox
+#   protected: false
+#   inventory: vagrant
+#   inventory_groups: [ 'my_swarm','my_swarm_managers' ]
+- name: centos-node
+  box: 'centos/7'
+  box_version: '1708.01'
+  ram: 768
+  ip: '172.16.1.103'
+  ssh_host_port: 2103
+  provider: virtualbox
+  protected: false
+  inventory: vagrant
+  inventory_groups: [ 'my_swarm' ]
+- name: ubuntu-node
+  box: 'bento/ubuntu-16.04'
+  box_version: '2.2.7'
+  ram: 768
+  ip: '172.16.1.104'
+  ssh_host_port: 2104
+  provider: virtualbox
+  protected: false
+  inventory: vagrant
+  inventory_groups: [ 'my_swarm' ]

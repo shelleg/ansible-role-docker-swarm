@@ -1,0 +1,22 @@
+---
+- hosts: localhost
+  roles:
+    - role: shelleg.test-inventory-generator
+
+- hosts: all
+  become: true
+  remote_user: root
+  vars:
+    docker_swarm_group: my_swarm
+    docker_swarm_manager_group: my_swarm_managers
+  # pre_tasks:
+  #   - name: Include vars of stuff.yml into the 'stuff' variable (2.2).
+  #     include_vars:
+  #       file: servers.yml
+  #       name: servers
+  # roles:
+    # - role: shelleg.test-inventory-generator
+    # - role: shelleg.epel
+    #   when: ansible_os_family == 'RedHat'
+    # - role: shelleg.simple-docker-daemon
+    # - role: shelleg.docker-swarm

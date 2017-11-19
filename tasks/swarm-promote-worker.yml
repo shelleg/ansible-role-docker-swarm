@@ -1,0 +1,24 @@
+---
+- name: "Check if {{ playbook_dir }}/group_vars/all/99_swarm.yml exists"
+  stat:
+    path: "{{ playbook_dir }}/group_vars/all/99_swarm.yml"
+  delegate_to: localhost
+  register: swarm_vars
+  become: false
+
+- name: "display swarm_vars"
+  debug:
+    var: swarm_vars
+    verbosity: 2
+
+- name: "Include swarm varfile"
+  include_vars: "{{ playbook_dir }}/group_vars/all/99_swarm.yml"
+  when: swarm_vars.stat.exists
+
+- name: "Swarm Join"
+  shell: docker swarm join "{{ swarm_manager }}":"{{ docker_swarm_manager_port }}" --token "{{ swarm_worker_join_token }}"
+  when: swarm_vars.stat.exists
+
+- name: "Swarm Join"
+  shell: docker swarm join "{{ hostvars[groups['swarm_temp'][0]]['swarm_manager'] }}:{{ swarm_manager_port }}" --token "{{ hostvars[groups['swarm_temp'][0]]['swarm_worker_join_token'] }}"
+  when: swarm_vars.stat.exists == false

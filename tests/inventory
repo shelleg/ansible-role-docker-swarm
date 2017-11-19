@@ -1,0 +1,9 @@
+[my_swarm]
+centos-master
+ubuntu-master
+centos-node
+ubuntu-node
+
+[my_swarm_managers]
+centos-master
+ubuntu-master

@@ -1,0 +1,5 @@
+---
+# - src: shelleg.simple-docker-daemon
+- src: shelleg.epel
+# - src: shelleg.docker-swarm
+# - src: shelleg.cratedb

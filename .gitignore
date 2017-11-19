@@ -1,0 +1,10 @@
+.idea/
+log/ansible.log
+.vagrant/
+./galaxy-roles/*
+galaxy-roles/*/
+playbooks/*.retry
+tests/site-roles/
+tests/*.retry
+tests/.vagrant/
+tests/.cache/

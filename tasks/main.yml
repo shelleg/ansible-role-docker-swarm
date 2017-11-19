@@ -1,0 +1,44 @@
+---
+# tasks file for ansible-role-docker-swarm
+
+- name: "Get swarm manager hostname"
+  set_fact:
+    docker_swarm_manager_hostname: "{{ hostvars[groups[docker_swarm_manager_group][0]]['inventory_hostname']}}"
+
+- name: "show docker_swarm_manager_hostname"
+  debug:
+    var: swarm_manager_hostname
+    verbosity: 2
+
+- name: "set the docker_swarm_manager_ip var in non-development mode"
+  set_fact:
+    docker_swarm_manager_ip: "{{ hostvars[docker_swarm_manager_hostname]['ansible_default_ipv4']['address'] }}"
+  when: ansible_virtualization_type != 'virtualbox'
+
+- name: "set the docker_swarm_manager_ip var in development mode"
+  set_fact:
+    docker_swarm_manager_ip: "{{ hostvars[docker_swarm_manager_hostname]['ansible_all_ipv4_addresses'][0] }}"
+  when: ansible_virtualization_type == 'virtualbox'
+
+- name: "show swarm_manager_ip"
+  debug:
+    var: swarm_manager_ip
+    verbosity: 2
+
+- name: "Is Swarm available || Active"
+  shell: docker info | grep -q "^Swarm"':'" active"
+  register: swarm_avail
+  changed_when: false
+  ignore_errors: True
+
+- name: "Initialize|join swarm manager(s)"
+  include: swarm-manager-init.yml
+  when: inventory_hostname == docker_swarm_manager_hostname and swarm_avail|failed
+
+- name: "Initialize|join swarm worker(s)"
+  include: swarm-worker-init.yml
+  when: inventory_hostname != docker_swarm_manager_hostname and swarm_avail|failed
+
+- name: "Swarm node promote when manager group > 0"
+  include: swarm-promote-worker.yml
+  when: docker_swarm_manager_group | length > 1 and inventory_hostname != docker_swarm_manager_hostname
